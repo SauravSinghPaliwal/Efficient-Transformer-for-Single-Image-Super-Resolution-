@@ -1,57 +1,66 @@
-# ESRT
-Efficient Transformer for Single Image
-Super-Resolution
-
-## Update
-#######22.03.17########
-
-The result images of our method are collected in fold "/result".
-
-
-
-## Environment
-*  pytorch >=1.0
-* python 3.6
-* numpy
-
-
-
-## Model
-<p align="center">
-    <img src="figs/esrt.png" width="960"> <br />
-    <em> The overall architecture of the proposed Efficient SR Transformer (ESRT). </em>
-</p>
-<p align="center">
-    <img src="figs/EMHA.png" width="960"> <br />
-    <em> Efficient Transformer and Efficient Multi-Head Attention. </em>
-</p>
-
-## Train
-* dataset: DIV2K
-* prepare
-
-  Like [IMDN](https://github.com/Zheng222/IMDN), convert png files in  DIV2K to npy files:
-  ```python
-  python scripts/png2npy.py --pathFrom /path/to/DIV2K/ --pathTo /path/to/DIV2K_decoded/
-  ```
-* Training
-```shell
-python train.py --scale 2 --patch_size 96
-python train.py --scale 3 --patch_size 144
-python train.py --scale 4 --patch_size 192
+# Efficient-Transformer-for-Single-Image-Super-Resolution
+# Efficient-Transformer-for-Single-Image-Super-Resolution
+## Firstly download and extract the DIV2K X2 dataset
 ```
-If you want a better result, use 128/192/256 patch_size for each scale.
-
-## Test
-Example:
-
-* test B100 X4
-```shell
-python test.py --is_y --test_hr_folder dataset/benchmark/B100/HR/ --test_lr_folder dataset/benchmark/B100/LR_bicubic/X4/ --output_folder results/B100/x4 --checkpoint experiment/checkpoint/x4/epoch_990.pth --upscale_factor 4
+wget http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_LR_bicubic_X2.zip
+wget http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_LR_bicubic_X2.zip
+wget http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_train_HR.zip
+wget http://data.vision.ee.ethz.ch/cvl/DIV2K/DIV2K_valid_HR.zip
 ```
 
-## Visual comparison
-<p align="center">
-    <img src="figs/visual images-v2.png" width="960"> <br />
-    <em> The visual comparison. </em>
-</p>
+```
+mkdir div2k
+unzip -q DIV2K_valid_LR_bicubic_X2.zip -d div2k
+unzip -q DIV2K_train_LR_bicubic_X2.zip -d div2k
+unzip -q DIV2K_train_HR.zip -d div2k
+unzip -q DIV2K_valid_HR.zip -d div2k
+```
+
+## Download the repo 
+```
+git clone
+```
+```
+wget
+```
+## Changes to be made
+##### I have already made the changes but for information I am just putting all the changes.
+## ****Remember to changs the directory to your dataset
+### After pulling the repo go to the train.py file and make the below given changes 
+```
+- Line no = 14 = Uncomment the line [ os.environ["CUDA_VISIBLE_DEVICES"] = '0’ ].
+- Line no = 20 = change the batch size to 1 [ parser.add_argument("--testBatchSize", type=int, default=1,
+                    help="testing batch size") ]
+- Line no = 38 = Change the directory to your root dataset directory.
+- Line no = 78 = Add your valid dataset directory.
+- Line no = 147 = Uncomment the line [ scale = scale ]
+- Line no = 215 = Comment out the line [ print("===> Valid. psnr: {:.4f}, ssim: {:.4f}".format(avg_psnr / len(testing_data_loader), avg_ssim /
+len(testing_data_loader))) ]
+```
+### Than go to the DIV2K.py file  
+```
+Line no = 43 = Add your decoded dataset directory path.
+```
+### Lastly open utils.py and change the import to 
+```
+from skimage.measure import compare_psnr as psnr
+from skimage.measure import compare_ssim as ssim
+```
+## to
+```
+from skimage.metrics import peak_signal_noise_ratio as psnr
+from skimage.metrics import structural_similarity as ssim
+```
+## Prepare the Dataset
+### convert png files in DIV2K to npy files
+```
+python3 scripts/png2npy.py --pathFrom /path/to/DIV2K/ --pathTo /path/to/DIV2K_decoded/
+```
+## Training
+```
+python3 train.py --scale 2 --patch_size 96
+python3 train.py --scale 2 --patch_size 144
+python3 train.py --scale 2 --patch_size 192
+```
+
+
